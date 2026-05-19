@@ -60,6 +60,19 @@ export const DataEntry: React.FC<DataEntryProps> = ({
     }
   };
 
+  const fetchHomeGPS = () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const coords = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
+        onFieldChange('f12_home_gr', coords);
+      }, (error) => {
+        alert("Unable to retrieve location: " + error.message);
+      });
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
+  };
+
   const labels: Record<number, string> = {
     1: 'नाम/उपनाम (Name)',
     2: 'पिता का नाम (Father Name)',
@@ -97,8 +110,7 @@ export const DataEntry: React.FC<DataEntryProps> = ({
     36: 'जेल विवरणी (Jail Details)',
     37: 'अन्य महत्वपूर्ण जानकारी',
     38: 'INTERROGATION REPORT',
-    39: 'Team Detail / Sign',
-    40: 'GR (Grid Reference)'
+    39: 'Team Detail / Sign'
   };
 
   // Bail Monitoring Form
@@ -301,7 +313,7 @@ export const DataEntry: React.FC<DataEntryProps> = ({
         </div>
       </section>
 
-      {Array.from({ length: 40 }, (_, i) => i + 1).map(n => {
+      {Array.from({ length: 39 }, (_, i) => i + 1).map(n => {
         const showTextarea = labels[n] !== undefined;
         // Primary rows for these fields are strictly headings
         const headerOnlyFields = [12, 14, 15, 30, 34, 35];
@@ -314,47 +326,48 @@ export const DataEntry: React.FC<DataEntryProps> = ({
             </div>
 
             {showTextarea && !headerOnlyFields.includes(n) && (
-              <div className="flex flex-col gap-2">
-                <textarea
-                  name={`f${n}`}
-                  value={state.fields[`f${n}`] || ''}
-                  onChange={(e) => onFieldChange(e.target.name, e.target.value)}
-                  className="w-full border border-gray-200 rounded p-2 text-xs h-16 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                  placeholder={`Detailed notes for serial ${n}...`}
-                />
-                {n === 40 && (
-                  <button
-                    onClick={() => {
-                      if ("geolocation" in navigator) {
-                        navigator.geolocation.getCurrentPosition((position) => {
-                          const coords = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
-                          onFieldChange('f40', coords);
-                        }, (error) => {
-                          alert("Unable to retrieve location: " + error.message);
-                        });
-                      } else {
-                        alert("Geolocation is not supported by your browser.");
-                      }
-                    }}
-                    className="self-start bg-blue-600 text-white text-[10px] px-3 py-1 rounded font-bold hover:bg-blue-700 transition-colors"
-                  >
-                    Get Current Location
-                  </button>
-                )}
-              </div>
+              <textarea
+                name={`f${n}`}
+                value={state.fields[`f${n}`] || ''}
+                onChange={(e) => onFieldChange(e.target.name, e.target.value)}
+                className="w-full border border-gray-200 rounded p-2 text-xs h-16 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                placeholder={`Detailed notes for serial ${n}...`}
+              />
             )}
 
-            {n === 12 && FAMILY_KEYS.map((s, idx) => (
-              <div key={s} className="mt-2">
-                <label className="text-[10px] text-gray-400">12.{idx + 1} {s}</label>
-                <textarea
-                  name={`f12_${s}`}
-                  value={state.fields[`f12_${s}`] || ''}
-                  onChange={(e) => onFieldChange(e.target.name, e.target.value)}
-                  className="w-full border border-gray-200 rounded p-1 text-[10px] h-8 focus:h-16 transition-all"
-                />
-              </div>
-            ))}
+            {n === 12 && (
+              <>
+                {FAMILY_KEYS.map((s, idx) => (
+                  <div key={s} className="mt-2">
+                    <label className="text-[10px] text-gray-400">12.{idx + 1} {s.includes('(') ? s : (s === 'ChildrenDetail' ? 'Children Detail' : `${s} Detail`)}</label>
+                    <textarea
+                      name={`f12_${s}`}
+                      value={state.fields[`f12_${s}`] || ''}
+                      onChange={(e) => onFieldChange(e.target.name, e.target.value)}
+                      className="w-full border border-gray-200 rounded p-1 text-[10px] h-8 focus:h-16 transition-all"
+                    />
+                  </div>
+                ))}
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <label className="text-[10px] font-bold text-blue-600 block mb-1">GR (Home)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      name="f12_home_gr"
+                      value={state.fields.f12_home_gr || ''}
+                      onChange={(e) => onFieldChange(e.target.name, e.target.value)}
+                      className="flex-1 border border-gray-200 rounded p-2 text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    />
+                    <button 
+                      onClick={fetchHomeGPS}
+                      className="bg-blue-600 text-white text-[10px] px-3 py-1 rounded font-bold hover:bg-blue-700 transition-colors"
+                    >
+                      Get Home Location
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
 
             {n === 13 && ['PhotoDate', 'ChakraApp'].map((s, idx) => (
               <div key={s} className="mt-2">
