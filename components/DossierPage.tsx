@@ -47,8 +47,7 @@ export const DossierPage: React.FC<DossierPageProps> = ({ state }) => {
       36: 'जेल विवरणी (Jail Details)',
       37: 'अन्य महत्वपूर्ण जानकारी',
       38: 'INTERROGATION REPORT',
-      39: 'Team Detail / Sign',
-      40: 'GR (Grid Reference)'
+      39: 'Team Detail / Sign'
     };
     return labels[n] || '';
   };
@@ -244,19 +243,24 @@ export const DossierPage: React.FC<DossierPageProps> = ({ state }) => {
 
         <tbody className="page-break-avoid">
           <tr>
-            <td className="border border-black text-center font-bold" rowSpan={FAMILY_KEYS.length + 1}>12</td>
+            <td className="border border-black text-center font-bold" rowSpan={FAMILY_KEYS.length + 2}>12</td>
             <td className="border border-black font-bold p-1 bg-gray-100 uppercase text-[9px]" colSpan={3}>
               पारिवारिक विवरणी (Family Details)
             </td>
           </tr>
           {FAMILY_KEYS.map((key, idx) => {
+            const label = key.includes('(') ? key : (key === 'ChildrenDetail' ? 'Children Detail' : `${key} Detail`);
             return (
               <tr key={key}>
-                <td className="border border-black font-bold p-1 italic pl-4 bg-gray-50">{idx + 1}. {key}</td>
+                <td className="border border-black font-bold p-1 italic pl-4 bg-gray-50">{idx + 1}. {label}</td>
                 <td colSpan={2} className="border border-black p-1 whitespace-pre-wrap">{fields[`f12_${key}`]}</td>
               </tr>
             );
           })}
+          <tr>
+            <td className="border border-black font-bold p-1 italic pl-4 bg-blue-50">GR (Home)</td>
+            <td colSpan={2} className="border border-black p-1 whitespace-pre-wrap font-bold">{fields.f12_home_gr}</td>
+          </tr>
         </tbody>
 
         <tbody className="page-break-avoid">
@@ -405,7 +409,7 @@ export const DossierPage: React.FC<DossierPageProps> = ({ state }) => {
           </tr>
         </tbody>
 
-        {[37, 38, 39, 40].map(n => (
+        {[37, 38, 39].map(n => (
           <tbody key={n} className="page-break-avoid">
             <tr>
               <td className="border border-black text-center font-bold">{n}</td>
