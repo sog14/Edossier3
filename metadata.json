@@ -1,0 +1,8 @@
+{
+  "name": "Copy 2of  High-Res E-Dossier System live working",
+  "description": "A professional digital dossier management system for official record keeping, featuring high-resolution PDF and Word export capabilities.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
